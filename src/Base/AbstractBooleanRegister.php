@@ -4,6 +4,7 @@ namespace Tmd\LaravelRegisters\Base;
 
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Exception;
+use Illuminate\Support\Collection;
 
 /**
  * A register for actions that are either on or off. e.g. Loving a post or following a user.
@@ -49,17 +50,20 @@ abstract class AbstractBooleanRegister extends AbstractRegister
      * Takes a Collection of database results and returns an array where the given column is the keys,
      * and the given value is the values.
      *
-     * @param           $collection
-     * @param           $keyColumn
-     * @param bool|true $value
+     * @param Collection|array $collection
+     * @param string|array     $keyColumn Which column from the items in the collection will be used as the key.
+     *                                    If an array is given, all the columns named in the array will be imploded
+     *                                    and used as the key.
+     * @param mixed            $value     The value to be used as the array values.
      *
      * @return array
      */
-    protected function buildArrayFromCollection($collection, $keyColumn, $value = true)
+    protected function buildObjectArrayFromCollection($collection, $keyColumn, $value = true)
     {
         $values = [];
         foreach ($collection as $item) {
-            $values[$item->{$keyColumn}] = $value;
+            $key = $this->buildStringFromItemValues($item, $keyColumn);
+            $values[$key] = $value;
         }
 
         return $values;

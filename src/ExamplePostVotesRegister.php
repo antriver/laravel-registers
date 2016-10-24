@@ -55,7 +55,7 @@ class ExamplePostVotesRegister extends AbstractValueRegister
             ]
         );
 
-        return $this->buildArrayFromCollection($rows, 'userId', 'vote');
+        return $this->buildObjectArrayFromCollection($rows, 'userId', 'vote');
     }
 
     /**

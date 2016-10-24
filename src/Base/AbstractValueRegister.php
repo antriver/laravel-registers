@@ -61,11 +61,12 @@ abstract class AbstractValueRegister extends AbstractRegister
      *
      * @return array
      */
-    protected function buildArrayFromCollection($collection, $keyColumn, $valueColumn)
+    protected function buildObjectArrayFromCollection($collection, $keyColumn, $valueColumn)
     {
         $values = [];
         foreach ($collection as $item) {
-            $values[$item->{$keyColumn}] = $item->{$valueColumn};
+            $key = $this->buildStringFromItemValues($item, $keyColumn);
+            $values[$key] = $item->{$valueColumn};
         }
 
         return $values;

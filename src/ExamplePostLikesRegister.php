@@ -43,7 +43,7 @@ class ExamplePostLikesRegister extends AbstractBooleanRegister
     {
         $achievements = PostLike::where('postId', $this->post->getKey())->select('userId')->get();
 
-        return $this->buildArrayFromCollection($achievements, 'userId');
+        return $this->buildObjectArrayFromCollection($achievements, 'userId');
     }
 
     /**

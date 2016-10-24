@@ -148,4 +148,27 @@ abstract class AbstractRegister implements RegisterInterface
 
         return new Exception("{$className} {$objectId} is not on the register.");
     }
+
+    /**
+     * Helper used in the buildObjectArrayFromCollection method in subclasses.
+     *
+     * @param object       $item
+     * @param string|array $column
+     * @param string       $glue
+     *
+     * @return string
+     */
+    protected function buildStringFromItemValues($item, $column, $glue = '-')
+    {
+        if (is_array($column)) {
+            $values = [];
+            foreach ($column as $c) {
+                $values[] = $item->{$c};
+            }
+
+            return implode($glue, $values);
+        } else {
+            return $item->{$key};
+        }
+    }
 }
