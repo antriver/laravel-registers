@@ -1,0 +1,19 @@
+{
+    "name": "tmd/laravel-registers",
+    "description": "A way to keep a simple list of models belonging to another model. e.g. Users that have liked a Post.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anthony Kuske",
+            "homepage": "http://www.anthonykuske.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Tmd\\LaravelRegisters\\": "src/"
+        }
+    },
+    "require": {
+        "laravel/framework": "^5.0"
+    }
+}
