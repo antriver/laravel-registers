@@ -2,7 +2,6 @@
 
 namespace Tmd\LaravelRegisters\Base;
 
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Exception;
 use Illuminate\Support\Collection;
 
@@ -15,13 +14,13 @@ abstract class AbstractBooleanRegister extends AbstractRegister
     /**
      * Add the given object to the register.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      * @param array         $data
      *
      * @return mixed
      * @throws Exception
      */
-    public function add(EloquentModel $object, array $data = [])
+    public function add($object, array $data = [])
     {
         if ($this->check($object)) {
             throw $this->getAlreadyOnRegisterException($object);
@@ -37,13 +36,13 @@ abstract class AbstractBooleanRegister extends AbstractRegister
     /**
      * Check if the given object is on the register.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      *
      * @return bool
      */
-    public function check(EloquentModel $object)
+    public function check($object)
     {
-        return isset($this->all()[$object->getKey()]);
+        return isset($this->all()[$this->getObjectKey($object)]);
     }
 
     /**

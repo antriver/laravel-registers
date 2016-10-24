@@ -3,7 +3,6 @@
 namespace Tmd\LaravelRegisters\Base;
 
 use Exception;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Support\Collection;
 
 /**
@@ -16,13 +15,13 @@ abstract class AbstractValueRegister extends AbstractRegister
     /**
      * Add the given object to the register.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      * @param array         $data
      *
      * @return mixed
      * @throws Exception
      */
-    public function add(EloquentModel $object, array $data = [])
+    public function add($object, array $data = [])
     {
         // Delete an old value first
         if ($this->check($object)) {
@@ -39,14 +38,14 @@ abstract class AbstractValueRegister extends AbstractRegister
     /**
      * Check if the given object is on the register.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      *
      * @return mixed
      */
-    public function check(EloquentModel $object)
+    public function check($object)
     {
-        $key = $object->getKey();
-        $value = isset($this->all()[$key]) ? $this->objects[$key] : null;
+        $objectKey = $this->getObjectKey($object);
+        $value = isset($this->all()[$objectKey]) ? $this->objects[$objectKey] : null;
 
         return $value;
     }

@@ -43,21 +43,21 @@ abstract class AbstractRegister implements RegisterInterface
     /**
      * Create the underling database entry for the action.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      * @param array         $data
      *
      * @return mixed
      */
-    abstract protected function create(EloquentModel $object, array $data = []);
+    abstract protected function create($object, array $data = []);
 
     /**
      * Delete the underling database entry for the action.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      *
      * @return mixed
      */
-    abstract protected function destroy(EloquentModel $object);
+    abstract protected function destroy($object);
 
     /**
      * Return all the information about all of the objects on the register.
@@ -98,7 +98,7 @@ abstract class AbstractRegister implements RegisterInterface
     /**
      * @inheritDoc
      */
-    public function remove(EloquentModel $object)
+    public function remove($object)
     {
         if (!$this->check($object)) {
             throw $this->getNotOnRegisterException($object);
@@ -120,33 +120,46 @@ abstract class AbstractRegister implements RegisterInterface
     }
 
     /**
+     * Get the key to use when storing an object on the register.
+     * The default supports Eloquent models.
+     *
+     * @param mixed|EloquentModel $object
+     *
+     * @return mixed
+     */
+    protected function getObjectKey($object)
+    {
+        return $object->getKey();
+    }
+
+    /**
      * Returns (not throws) the Exception to be thrown when trying to add an object already on the register.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      *
      * @return Exception
      */
-    protected function getAlreadyOnRegisterException(EloquentModel $object)
+    protected function getAlreadyOnRegisterException($object)
     {
         $className = get_class($object);
-        $objectId = $object->getKey();
+        $objectKey = $this->getObjectKey($object);
 
-        return new Exception("{$className} {$objectId} is already on the register.");
+        return new Exception("{$className} {$objectKey} is already on the register.");
     }
 
     /**
      * Returns (not throws) the Exception to be thrown when trying to remove an object not on the register.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      *
      * @return Exception
      */
-    protected function getNotOnRegisterException(EloquentModel $object)
+    protected function getNotOnRegisterException($object)
     {
         $className = get_class($object);
-        $objectId = $object->getKey();
+        $objectKey = $this->getObjectKey($object);
 
-        return new Exception("{$className} {$objectId} is not on the register.");
+        return new Exception("{$className} {$objectKey} is not on the register.");
     }
 
     /**

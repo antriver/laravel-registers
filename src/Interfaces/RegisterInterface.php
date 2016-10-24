@@ -2,40 +2,38 @@
 
 namespace Tmd\LaravelRegisters\Interfaces;
 
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-
 interface RegisterInterface
 {
     /**
      * Add the given object to the register.
      * May return a boolean, or data about that entry, depending upon the implementation.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      * @param array         $data Optional additional data to pass to the register.
      *
      * @return mixed
      */
-    public function add(EloquentModel $object, array $data = []);
+    public function add($object, array $data = []);
 
     /**
      * Remove the given object from the register.
      * May return a boolean, or data about that entry, depending upon the implementation.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      *
      * @return mixed
      */
-    public function remove(EloquentModel $object);
+    public function remove($object);
 
     /**
      * Check if the given object is on the register.
      * May return a boolean, or data about that entry, depending upon the implementation.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      *
      * @return mixed
      */
-    public function check(EloquentModel $object);
+    public function check($object);
 
     /**
      * Return all the information about all of the objects on the register.
