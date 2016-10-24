@@ -44,7 +44,7 @@ abstract class AbstractRegister implements RegisterInterface
      * Create the underling database entry for the action.
      *
      * @param mixed $object
-     * @param array         $data
+     * @param array $data
      *
      * @return mixed
      */

@@ -3,13 +3,12 @@
 namespace Tmd\LaravelRegisters;
 
 use DB;
-use Exception;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Tmd\LaravelRegisters\Base\AbstractBooleanRegister;
 
 /**
  * An example use of a a register that stores on/off values.
- * The user has either liked the post or they havent.
+ * The user has either liked the post or they have not.
  */
 class ExamplePostLikesRegister extends AbstractBooleanRegister
 {
@@ -49,12 +48,12 @@ class ExamplePostLikesRegister extends AbstractBooleanRegister
     /**
      * Create the underling database entry for the action.
      *
-     * @param EloquentModel $object
-     * @param array         $data
+     * @param mixed $object
+     * @param array $data
      *
      * @return mixed
      */
-    protected function create(EloquentModel $object, array $data = [])
+    protected function create($object, array $data = [])
     {
         $postLike = PostLike::create(
             [
@@ -69,11 +68,11 @@ class ExamplePostLikesRegister extends AbstractBooleanRegister
     /**
      * Delete the underling database entry for the action.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      *
      * @return mixed
      */
-    protected function destroy(EloquentModel $object)
+    protected function destroy($object)
     {
         return DB::affectingStatement(
             "DELETE FROM post_likes WHERE userId = ? AND postId = ?",

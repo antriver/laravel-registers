@@ -16,7 +16,7 @@ abstract class AbstractValueRegister extends AbstractRegister
      * Add the given object to the register.
      *
      * @param mixed $object
-     * @param array         $data
+     * @param array $data
      *
      * @return mixed
      * @throws Exception

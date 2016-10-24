@@ -9,7 +9,7 @@ interface RegisterInterface
      * May return a boolean, or data about that entry, depending upon the implementation.
      *
      * @param mixed $object
-     * @param array         $data Optional additional data to pass to the register.
+     * @param array $data Optional additional data to pass to the register.
      *
      * @return mixed
      */

@@ -51,7 +51,7 @@ class ExamplePostVotesRegister extends AbstractValueRegister
         $rows = DB::select(
             'SELECT userId, vote FROM post_votes WHERE postId = ?',
             [
-                $this->post->getKey()
+                $this->post->getKey(),
             ]
         );
 
@@ -61,13 +61,13 @@ class ExamplePostVotesRegister extends AbstractValueRegister
     /**
      * Create the underling database entry for the action.
      *
-     * @param EloquentModel $object
-     * @param array         $data
+     * @param mixed $object
+     * @param array $data
      *
      * @return mixed
      * @throws Exception
      */
-    protected function create(EloquentModel $object, array $data = [])
+    protected function create($object, array $data = [])
     {
         if (empty($data['vote'])) {
             throw new Exception("Vote is required.");
@@ -95,11 +95,11 @@ class ExamplePostVotesRegister extends AbstractValueRegister
     /**
      * Delete the underling database entry for the action.
      *
-     * @param EloquentModel $object
+     * @param mixed $object
      *
      * @return mixed
      */
-    protected function destroy(EloquentModel $object)
+    protected function destroy($object)
     {
         $oldVotes = PostVote::where('postId', $this->post->getKey())->where('userId', $object->getKey())->get();
 
