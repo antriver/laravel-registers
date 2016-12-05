@@ -219,7 +219,7 @@ abstract class AbstractRegister implements RegisterInterface, \Countable
 
             return implode($glue, $values);
         } else {
-            return $item->{$key};
+            return $item->{$column};
         }
     }
 }
