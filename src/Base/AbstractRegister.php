@@ -65,8 +65,12 @@ abstract class AbstractRegister implements RegisterInterface
      * Delete ALL the underling database entries for the action.
      *
      * @return bool
+     * @throws Exception
      */
-    abstract protected function destroyAll();
+    protected function destroyAll()
+    {
+        throw new Exception("destroyAll has not been implemented for ".get_class($this));
+    }
 
     /**
      * Returns all the information about all of the objects on the register.
