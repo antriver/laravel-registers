@@ -47,13 +47,16 @@ abstract class AbstractBooleanRegister extends AbstractRegister
 
     /**
      * Takes a Collection of database results and returns an array where the given column is the keys,
-     * and the given value is the values.
+     * and the given value is the values. (The value will be the same for every item in the array, only the
+     * keys will change.)
+     * This is used because there is a significant performance improvement in using !empty($array[$key])
+     * or isset($array[$key]) over in_array($key, $array).
      *
      * @param Collection|array $collection
      * @param string|array     $keyColumn Which column from the items in the collection will be used as the key.
      *                                    If an array is given, all the columns named in the array will be imploded
      *                                    and used as the key.
-     * @param mixed            $value     The value to be used as the array values.
+     * @param mixed            $value     The value to be used as the array values. This should be a truthy value.
      *
      * @return array
      */

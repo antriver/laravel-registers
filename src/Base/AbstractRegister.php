@@ -9,8 +9,7 @@ use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
 
 /**
  * A register is a simple list of models belonging to another model.
- * E.g. users a user follows or posts a user loves.
- *
+ * E.g. users a user follows, posts a user loves, or topics a post is in.
  * The "owner", or "subject" of the register is who the objects belong to.
  * The "object" is the item being added to the register.
  */
@@ -22,17 +21,18 @@ abstract class AbstractRegister implements RegisterInterface
     protected $objects = null;
 
     /**
-     * Return a string to be the key for caching which objects are on this register.
+     * Returns a string to be the key for caching which objects are on this register.
      *
      * @return string
      */
     abstract protected function getCacheKey();
 
     /**
-     * This returns the information that will be cached by $this->all().
-     * Actually check the database to return an array of object keys that have performed the action (uncached).
-     * This should return an array where THE ARRAY KEYS ARE THE OBJECT KEYS. There can be some arbitrary small value
-     * like true or 1 as the array values.
+     * Returns the information that will be cached by $this->all().
+     * This will actually check the database to return an array of object keys that have performed the action.
+     *
+     * This should return an array where *the array keys are the object keys*. There can be some arbitrary small value
+     * like true or 1 as the array values. See $this->buildObjectArrayFromCollection() for more info.
      * The reason for this is it's much faster to use isset() than in_array() on larger arrays.
      * See: http://maettig.com/1397246220
      *
@@ -42,6 +42,7 @@ abstract class AbstractRegister implements RegisterInterface
 
     /**
      * Create the underling database entry for the action.
+     * e.g. an entry in the post_likes table
      *
      * @param mixed $object
      * @param array $data
@@ -52,6 +53,7 @@ abstract class AbstractRegister implements RegisterInterface
 
     /**
      * Delete the underling database entry for the action.
+     * e.g. an entry in the post_likes table
      *
      * @param mixed $object
      *
@@ -60,10 +62,17 @@ abstract class AbstractRegister implements RegisterInterface
     abstract protected function destroy($object);
 
     /**
-     * Return all the information about all of the objects on the register.
+     * Delete ALL the underling database entries for the action.
+     *
+     * @return bool
+     */
+    abstract protected function destroyAll();
+
+    /**
+     * Returns all the information about all of the objects on the register.
      * Uses a cached copy if available.
      *
-     * @param bool $useCache Should a cached copy be used if available? Can be false to bypass the cache.
+     * @param bool $useCache Should a cached copy be used if available? Can be false to bypass/refresh the cache.
      *
      * @return array
      */
@@ -88,7 +97,7 @@ abstract class AbstractRegister implements RegisterInterface
     }
 
     /**
-     * @inheritDoc
+     * @return array
      */
     public function keys()
     {
@@ -96,7 +105,10 @@ abstract class AbstractRegister implements RegisterInterface
     }
 
     /**
-     * @inheritDoc
+     * @param mixed $object
+     *
+     * @return mixed
+     * @throws Exception
      */
     public function remove($object)
     {
@@ -105,6 +117,20 @@ abstract class AbstractRegister implements RegisterInterface
         }
 
         $response = $this->destroy($object);
+
+        $this->refresh();
+
+        return $response;
+    }
+
+    /**
+     * Delete all the entries on the register.
+     *
+     * @return bool
+     */
+    public function clear()
+    {
+        $response = $this->destroyAll();
 
         $this->refresh();
 
