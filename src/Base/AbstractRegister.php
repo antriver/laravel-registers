@@ -13,7 +13,7 @@ use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
  * The "owner", or "subject" of the register is who the objects belong to.
  * The "object" is the item being added to the register.
  */
-abstract class AbstractRegister implements RegisterInterface
+abstract class AbstractRegister implements RegisterInterface, \Countable
 {
     /**
      * @var null|array
@@ -106,6 +106,14 @@ abstract class AbstractRegister implements RegisterInterface
     public function keys()
     {
         return array_keys($this->all());
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->keys());
     }
 
     /**
