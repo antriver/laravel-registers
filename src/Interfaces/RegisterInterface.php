@@ -30,10 +30,11 @@ interface RegisterInterface
      * May return a boolean, or data about that entry, depending upon the implementation.
      *
      * @param mixed $object
+     * @param bool  $useCache
      *
      * @return mixed
      */
-    public function check($object);
+    public function check($object, $useCache = true);
 
     /**
      * Return all the information about all of the objects on the register.

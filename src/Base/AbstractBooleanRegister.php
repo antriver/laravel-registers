@@ -37,12 +37,13 @@ abstract class AbstractBooleanRegister extends AbstractRegister
      * Check if the given object is on the register.
      *
      * @param mixed $object
+     * @param bool  $useCache
      *
      * @return bool
      */
-    public function check($object)
+    public function check($object, $useCache = true)
     {
-        return isset($this->all()[$this->getObjectKey($object)]);
+        return isset($this->all($useCache)[$this->getObjectKey($object)]);
     }
 
     /**

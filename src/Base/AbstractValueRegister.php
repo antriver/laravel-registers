@@ -39,13 +39,14 @@ abstract class AbstractValueRegister extends AbstractRegister
      * Check if the given object is on the register.
      *
      * @param mixed $object
+     * @param bool  $useCache
      *
      * @return mixed
      */
-    public function check($object)
+    public function check($object, $useCache = true)
     {
         $objectKey = $this->getObjectKey($object);
-        $value = isset($this->all()[$objectKey]) ? $this->objects[$objectKey] : null;
+        $value = isset($this->all($useCache)[$objectKey]) ? $this->objects[$objectKey] : null;
 
         return $value;
     }
