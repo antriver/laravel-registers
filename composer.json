@@ -2,12 +2,6 @@
     "name": "tmd/laravel-registers",
     "description": "A way to keep a simple list of models belonging to another model. e.g. Users that have liked a Post.",
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/antriver/ninja-mutex.git"
-        }
-    ],
     "authors": [
         {
             "name": "Anthony Kuske",
@@ -21,6 +15,5 @@
     },
     "require": {
         "laravel/framework": "^5.0",
-        "arvenil/ninja-mutex": "dev-predis-timeout"
     }
 }
