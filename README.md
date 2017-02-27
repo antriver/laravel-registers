@@ -27,7 +27,7 @@ The only difference between the two is `AbstractBooleanRegister`'s `check()` met
 
 In both cases you must implement these methods:
 
-### create($object, array $data = [])
+### `create($object, array $data = [])`
 This should add an entry to the database to permanently store the action that has been performed (e.g. INSERT an entry in the post_likes or post_votes table). This should return an integer to show the result.
 * 1 = Object was added to the register.
 * 2 = Object was already on the register and so was modified. 
@@ -39,10 +39,10 @@ Hints:
 
 The post will be accessible as `$this-owner`, the user will be the passed in `$object`.
 
-### destroy($object)
+### `destroy($object)`
 This should delete the row in the database relating to the action (e.g. DELETE the entry from the post_likes table) and return the number of rows affected. If this returns 0 an exception will be thrown, as that meant the object was not on the register.
 
-### load()
+### `load()`
 This should return all of the items on the register (e.g. SELECT all the entries about this post from the post_likes table).
 This method should return an associative array where the keys are the IDs of the objects and the value is information about that object's entry.
 
