@@ -6,6 +6,9 @@ use Cache;
 use Countable;
 use Exception;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use ReflectionClass;
+use Tmd\LaravelRegisters\Exceptions\AlreadyOnRegisterException;
+use Tmd\LaravelRegisters\Exceptions\NotOnRegisterException;
 use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
 
 /**
@@ -93,7 +96,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      */
     public function remove(EloquentModel $object)
     {
-        if (!$response = $this->destroy($object)) {
+        if ($response = $this->destroy($object)) {
             $this->refresh();
 
             return true;
@@ -184,7 +187,8 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      */
     protected function getCacheKey()
     {
-        return strtolower(get_class($this)).':'.$this->owner->getKey();
+        $reflect = new ReflectionClass($this);
+        return strtolower($reflect->getShortName()).':'.$this->owner->getKey();
     }
 
     /**
@@ -199,7 +203,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
         $className = get_class($object);
         $objectKey = $object->getKey();
 
-        return new Exception("{$className} {$objectKey} is already on the register.");
+        return new AlreadyOnRegisterException("{$className} {$objectKey} is already on the register.");
     }
 
     /**
@@ -214,7 +218,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
         $className = get_class($object);
         $objectKey = $object->getKey();
 
-        return new Exception("{$className} {$objectKey} is not on the register.");
+        return new NotOnRegisterException("{$className} {$objectKey} is not on the register.");
     }
 
     /**

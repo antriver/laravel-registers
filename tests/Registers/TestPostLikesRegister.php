@@ -1,6 +1,6 @@
 <?php
 
-namespace Tmd\LaravelRegisters;
+namespace Tmd\LaravelRegisters\Tests\Registers;
 
 use DB;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
@@ -10,7 +10,7 @@ use Tmd\LaravelRegisters\Base\AbstractBooleanRegister;
  * An example use of a a register that stores on/off values.
  * The user has either liked the post or they have not.
  */
-class ExamplePostLikesRegister extends AbstractBooleanRegister
+class TestPostLikesRegister extends AbstractBooleanRegister
 {
     protected function load()
     {
@@ -28,7 +28,7 @@ class ExamplePostLikesRegister extends AbstractBooleanRegister
     {
         // Inserts into the post_likes table. Does nothing if it already exists in the table.
         $affectedRows = DB::affectingStatement(
-            'INSERT INTO post_likes (userId, postId) VALUES(?, ?) ON DUPLICAE KEY UPDATE userId = VALUES(userId)',
+            'INSERT INTO post_likes (userId, postId) VALUES(?, ?) ON DUPLICATE KEY UPDATE userId = VALUES(userId)',
             [
                 $object->getKey(),
                 $this->owner->getKey(),
@@ -37,11 +37,11 @@ class ExamplePostLikesRegister extends AbstractBooleanRegister
 
         if ($affectedRows) {
             // You can perform some additional calculations here. Like updating the like count on the post object.
-            ++$this->owner->likeCount;
-            $this->owner->save();
+            //++$this->owner->likeCount;
+            //$this->owner->save();
 
             // Maybe fire an event or two.
-            event(new NewPostLikeEvent($this->owner, $object));
+            //event(new NewPostLikeEvent($this->owner, $object));
         }
 
         return $affectedRows;
@@ -59,8 +59,8 @@ class ExamplePostLikesRegister extends AbstractBooleanRegister
 
         if ($affectedRows) {
             // You can perform some additional calculations here. Like updating the like count on the post object.
-            $this->owner->likeCount -= $affectedRows;
-            $this->owner->save();
+            //$this->owner->likeCount -= $affectedRows;
+            //$this->owner->save();
         }
 
         return $affectedRows;
