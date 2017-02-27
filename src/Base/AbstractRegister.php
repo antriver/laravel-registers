@@ -37,14 +37,8 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     }
 
     /**
-     * Fetch from the database and return return all the objects on the register.
-     *
-     * This should return an array where *the array keys are the objects' primary keys*.
-     * For AbstractValueRegisters this is simple.
-     * For AbstractBooleanRegisters, there can be some small value like true or 1 as the array values.
-     * You can use $this->buildObjectArrayFromCollection() for more info.
-     * The reason for this is it's much faster to use isset() than in_array() on larger arrays.
-     * See: http://maettig.com/1397246220
+     * Query the database to find the objects on the register.
+     * This should return an array where the array keys are the primary keys of the objects. (See README for more info.)
      *
      * @return array
      */
