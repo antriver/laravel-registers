@@ -54,7 +54,7 @@ You can use the `buildObjectsArrayFromLoadedData()` helper method to provide the
 
 ## Examples
 
-See [`ExamplePostLikesRegister.php`](src/ExamplePostLikesRegister.php) and [`ExamplePostVotesRegister.php`](src/ExamplePostVotesRegister.php) for example implementations.
+See [`ExamplePostLikesRegister.php`](tests/Repositories/ExamplePostLikesRegister.php) and [`ExamplePostVotesRegister.php`](tests/Repositories/ExamplePostVotesRegister.php) for example implementations.
 
 ## Usage
 Both `AbstractBooleanRegister` and `AbstractValueRegister` provide the same public methods.
