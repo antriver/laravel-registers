@@ -12,74 +12,57 @@ use Tmd\LaravelRegisters\Base\AbstractBooleanRegister;
  */
 class ExamplePostLikesRegister extends AbstractBooleanRegister
 {
-    /**
-     * @var EloquentModel
-     */
-    protected $post;
-
-    /**
-     * @param EloquentModel $post
-     */
-    public function __construct(EloquentModel $post)
+    protected function load()
     {
-        $this->post = $post;
-    }
-
-    /**
-     * Return a string to be the key for caching which objects are on this register.
-     *
-     * @return string
-     */
-    protected function getCacheKey()
-    {
-        return 'post-likes-'.$this->post->getKey();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function loadObjects()
-    {
-        $achievements = PostLike::where('postId', $this->post->getKey())->select('userId')->get();
-
-        return $this->buildObjectArrayFromCollection($achievements, 'userId');
-    }
-
-    /**
-     * Create the underling database entry for the action.
-     *
-     * @param mixed $object
-     * @param array $data
-     *
-     * @return mixed
-     */
-    protected function create($object, array $data = [])
-    {
-        $postLike = PostLike::create(
+        $rows = DB::select(
+            'SELECT userId FROM post_likes WHERE postId = ?',
             [
-                'postId' => $this->post->getKey(),
-                'userId' => $object->getKey(),
+                $this->owner->getKey(),
             ]
         );
 
-        return $postLike;
+        return $this->buildObjectsArrayFromLoadedData($rows, 'userId');
     }
 
-    /**
-     * Delete the underling database entry for the action.
-     *
-     * @param mixed $object
-     *
-     * @return mixed
-     */
-    protected function destroy($object)
+    protected function create(EloquentModel $object, array $data = [])
     {
-        return DB::affectingStatement(
+        // Inserts into the post_likes table. Does nothing if it already exists in the table.
+        $affectedRows = DB::affectingStatement(
+            'INSERT INTO post_likes (userId, postId) VALUES(?, ?) ON DUPLICAE KEY UPDATE userId = VALUES(userId)',
+            [
+                $object->getKey(),
+                $this->owner->getKey(),
+            ]
+        );
+
+        if ($affectedRows) {
+            // You can perform some additional calculations here. Like updating the like count on the post object.
+            ++$this->owner->likeCount;
+            $this->owner->save();
+
+            // Maybe fire an event or two.
+            event(new NewPostLikeEvent($this->owner, $object));
+        }
+
+        return $affectedRows;
+    }
+
+    protected function destroy(EloquentModel $object)
+    {
+        $affectedRows = DB::affectingStatement(
             "DELETE FROM post_likes WHERE userId = ? AND postId = ?",
             [
                 $object->getKey(),
-                $this->post->getKey(),
+                $this->owner->getKey(),
             ]
         );
+
+        if ($affectedRows) {
+            // You can perform some additional calculations here. Like updating the like count on the post object.
+            $this->owner->likeCount -= $affectedRows;
+            $this->owner->save();
+        }
+
+        return $affectedRows;
     }
 }

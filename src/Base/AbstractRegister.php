@@ -3,6 +3,7 @@
 namespace Tmd\LaravelRegisters\Base;
 
 use Cache;
+use Countable;
 use Exception;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
@@ -10,35 +11,44 @@ use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
 /**
  * A register is a simple list of models belonging to another model.
  * E.g. users a user follows, posts a user loves, or topics a post is in.
- * The "owner", or "subject" of the register is who the objects belong to.
+ * The "owner" of the register is who the objects belong to.
  * The "object" is the item being added to the register.
  */
-abstract class AbstractRegister implements RegisterInterface, \Countable
+abstract class AbstractRegister implements RegisterInterface, Countable
 {
+    /**
+     * This 'owner' is the model the list belongs to. In the case of a 'post likes' register this should be the post.
+     *
+     * @var EloquentModel
+     */
+    protected $owner;
+
     /**
      * @var null|array
      */
     protected $objects = null;
 
     /**
-     * Returns a string to be the key for caching which objects are on this register.
-     *
-     * @return string
+     * @param EloquentModel $owner
      */
-    abstract protected function getCacheKey();
+    public function __construct(EloquentModel $owner)
+    {
+        $this->owner = $owner;
+    }
 
     /**
-     * Returns the information that will be cached by $this->all().
-     * This will actually check the database to return an array of object keys that have performed the action.
+     * Fetch from the database and return return all the objects on the register.
      *
-     * This should return an array where *the array keys are the object keys*. There can be some arbitrary small value
-     * like true or 1 as the array values. See $this->buildObjectArrayFromCollection() for more info.
+     * This should return an array where *the array keys are the objects' primary keys*.
+     * For AbstractValueRegisters this is simple.
+     * For AbstractBooleanRegisters, there can be some small value like true or 1 as the array values.
+     * You can use $this->buildObjectArrayFromCollection() for more info.
      * The reason for this is it's much faster to use isset() than in_array() on larger arrays.
      * See: http://maettig.com/1397246220
      *
      * @return array
      */
-    abstract protected function loadObjects();
+    abstract protected function load();
 
     /**
      * Create the underling database entry for the action.
@@ -47,9 +57,9 @@ abstract class AbstractRegister implements RegisterInterface, \Countable
      * @param mixed $object
      * @param array $data
      *
-     * @return mixed
+     * @return int
      */
-    abstract protected function create($object, array $data = []);
+    abstract protected function create(EloquentModel $object, array $data = []);
 
     /**
      * Delete the underling database entry for the action.
@@ -59,48 +69,69 @@ abstract class AbstractRegister implements RegisterInterface, \Countable
      *
      * @return mixed
      */
-    abstract protected function destroy($object);
+    abstract protected function destroy(EloquentModel $object);
 
     /**
-     * Delete ALL the underling database entries for the action.
+     * Add the given object to the register.
      *
-     * @return bool
+     * @param mixed $object
+     * @param array $data
+     *
+     * @return boolean
      * @throws Exception
      */
-    protected function destroyAll()
+    public function add(EloquentModel $object, array $data = [])
     {
-        throw new Exception("destroyAll has not been implemented for ".get_class($this));
+        if ($result = $this->create($object, $data)) {
+            $this->refresh();
+
+            return true;
+        }
+
+        throw $this->getAlreadyOnRegisterException($object);
+    }
+
+    /**
+     * @param mixed $object
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function remove(EloquentModel $object)
+    {
+        if (!$response = $this->destroy($object)) {
+            $this->refresh();
+
+            return true;
+        }
+
+        throw $this->getNotOnRegisterException($object);
     }
 
     /**
      * Returns all the information about all of the objects on the register.
      * Uses a cached copy if available.
      *
-     * @param bool $useCache Should a cached copy be used if available? Can be false to bypass/refresh the cache.
-     *
      * @return array
      */
-    public function all($useCache = true)
+    public function all()
     {
-        if ($useCache && is_array($this->objects)) {
-            return $this->objects;
-        }
-
-        $cacheKey = $this->getCacheKey();
-        if ($useCache && !is_null($value = Cache::get($cacheKey))) {
-            $this->objects = $value;
-
-            return $value;
-        }
-
-        $this->objects = $this->loadObjects();
-
-        Cache::forever($cacheKey, $this->objects);
-
-        return $this->objects;
+        return $this->getObjects(true);
     }
 
     /**
+     * Updates the cache of objects on the register, and returns all the items.
+     *
+     * @return array
+     */
+    public function refresh()
+    {
+        return $this->getObjects(false);
+    }
+
+    /**
+     * Return an array of the keys of objects on the register.
+     *
      * @return array
      */
     public function keys()
@@ -109,78 +140,70 @@ abstract class AbstractRegister implements RegisterInterface, \Countable
     }
 
     /**
+     * Return the number of objects on the register.
+     *
      * @return int
      */
     public function count()
     {
-        return count($this->keys());
+        return count($this->all());
     }
 
     /**
-     * @param mixed $object
+     * Returns information about all the objects on the register.
+     * Gets from (in order of preference):
+     * 1. In
      *
-     * @return mixed
-     * @throws Exception
+     * @param bool $useCache
+     *
+     * @return array|null
      */
-    public function remove($object)
+    protected function getObjects($useCache = true)
     {
-        if (!$this->check($object)) {
-            throw $this->getNotOnRegisterException($object);
+        // Use objects already in memory if available
+        if ($useCache && is_array($this->objects)) {
+            return $this->objects;
         }
 
-        $response = $this->destroy($object);
+        // Use objects in cache if available
+        $cacheKey = $this->getCacheKey();
+        if ($useCache && $cacheKey && !is_null($value = Cache::get($cacheKey))) {
+            $this->objects = $value;
 
-        $this->refresh();
+            return $value;
+        }
 
-        return $response;
+        $this->objects = $this->load();
+
+        if ($cacheKey) {
+            Cache::forever($cacheKey, $this->objects);
+        }
+
+        return $this->objects;
     }
 
     /**
-     * Delete all the entries on the register.
+     * Returns a string to be the key for caching which objects are on this register.
+     * Return null to disable use of Laravel's cache (will still use the in-memory cache).
      *
-     * @return bool
+     * @return string|null
      */
-    public function clear()
+    protected function getCacheKey()
     {
-        $response = $this->destroyAll();
-
-        $this->refresh();
-
-        return $response;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function refresh()
-    {
-        $this->all(false);
-    }
-
-    /**
-     * Get the key to use when storing an object on the register.
-     * The default supports Eloquent models.
-     *
-     * @param mixed|EloquentModel $object
-     *
-     * @return mixed
-     */
-    protected function getObjectKey($object)
-    {
-        return $object->getKey();
+        return strtolower(get_class($this)).':'.$this->owner->getKey();
     }
 
     /**
      * Returns (not throws) the Exception to be thrown when trying to add an object already on the register.
      *
-     * @param mixed $object
+     * @param EloquentModel $object
      *
      * @return Exception
      */
-    protected function getAlreadyOnRegisterException($object)
+    protected function getAlreadyOnRegisterException(EloquentModel $object)
     {
         $className = get_class($object);
-        $objectKey = $this->getObjectKey($object);
+        $objectKey = $object->getKey();
 
         return new Exception("{$className} {$objectKey} is already on the register.");
     }
@@ -188,38 +211,39 @@ abstract class AbstractRegister implements RegisterInterface, \Countable
     /**
      * Returns (not throws) the Exception to be thrown when trying to remove an object not on the register.
      *
-     * @param mixed $object
+     * @param EloquentModel $object
      *
      * @return Exception
      */
-    protected function getNotOnRegisterException($object)
+    protected function getNotOnRegisterException(EloquentModel $object)
     {
         $className = get_class($object);
-        $objectKey = $this->getObjectKey($object);
+        $objectKey = $object->getKey();
 
         return new Exception("{$className} {$objectKey} is not on the register.");
     }
 
     /**
-     * Helper used in the buildObjectArrayFromCollection method in subclasses.
+     * Takes an array of database results and returns an array where the specified column is used for the keys,
+     * and the specified column is used for the values.
      *
-     * @param object       $item
-     * @param string|array $column
-     * @param string       $glue
+     * @param object[]    $rows
+     * @param string      $keyColumn
+     * @param string|bool $valueColumn If a string is given, that column from each row will be used as its value.
+     *                                 Otherwise, the literal value of $valueColumn will be used.
      *
-     * @return string
+     * @return array
      */
-    protected function buildStringFromItemValues($item, $column, $glue = '-')
+    protected function buildObjectsArrayFromLoadedData($rows, $keyColumn, $valueColumn = true)
     {
-        if (is_array($column)) {
-            $values = [];
-            foreach ($column as $c) {
-                $values[] = $item->{$c};
-            }
+        $values = [];
+        $fixedValue = !is_string($valueColumn);
 
-            return implode($glue, $values);
-        } else {
-            return $item->{$column};
+        foreach ($rows as $item) {
+            $key = $item->{$keyColumn};
+            $values[$key] = $fixedValue ? $valueColumn : $item->{$valueColumn};
         }
+
+        return $values;
     }
 }

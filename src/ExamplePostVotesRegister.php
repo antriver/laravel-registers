@@ -4,112 +4,57 @@ namespace Tmd\LaravelRegisters;
 
 use DB;
 use Exception;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Tmd\LaravelRegisters\Base\AbstractValueRegister;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 /**
  * An example use of a a register that stores additional data for the objects on it.
- * The user has voted a certain way on a post (e.g. upvoted or downvoted)
+ * The user has voted a certain way on a post (e.g. upvoted or downvoted).
  */
 class ExamplePostVotesRegister extends AbstractValueRegister
 {
-    /**
-     * @var EloquentModel
-     */
-    protected $post;
-
-    /**
-     * @param EloquentModel $post
-     */
-    public function __construct(EloquentModel $post)
-    {
-        $this->post = $post;
-    }
-
-    /**
-     * Return a string to be the key for caching which objects are on this register.
-     *
-     * @return string
-     */
-    protected function getCacheKey()
-    {
-        return 'post-votes-'.$this->post->getKey();
-    }
-
-    /**
-     * This returns the information that will be cached by $this->all().
-     * Actually check the database to return an array of object keys that have performed the action (uncached).
-     * This should return an array where THE ARRAY KEYS ARE THE OBJECT KEYS. There can be some arbitrary small value
-     * like true or 1 as the array values.
-     * The reason for this is it's much faster to use isset() than in_array() on larger arrays.
-     * See: http://maettig.com/1397246220
-     *
-     * @return array
-     */
-    protected function loadObjects()
+    protected function load()
     {
         $rows = DB::select(
             'SELECT userId, vote FROM post_votes WHERE postId = ?',
             [
-                $this->post->getKey(),
+                $this->owner->getKey(),
             ]
         );
 
-        return $this->buildObjectArrayFromCollection($rows, 'userId', 'vote');
+        return $this->buildObjectsArrayFromLoadedData($rows, 'userId', 'vote');
     }
 
-    /**
-     * Create the underling database entry for the action.
-     *
-     * @param mixed $object
-     * @param array $data
-     *
-     * @return mixed
-     * @throws Exception
-     */
-    protected function create($object, array $data = [])
+    protected function create(EloquentModel $object, array $data = [])
     {
         if (empty($data['vote'])) {
             throw new Exception("Vote is required.");
         }
-        $vote = $data['vote'];
 
-        $newVote = PostVote::create(
+        // Inserts into the post_likes table. Updates the saved value if it already exists in the table.
+        $affectedRows = DB::affectingStatement(
+            'INSERT INTO post_votes (userId, postId, vote) VALUES(?, ?, ?) 
+             ON DUPLICAE KEY UPDATE vote = VALUES(vote)',
             [
-                'postId' => $this->post->getKey(),
-                'userId' => $object->getKey(),
-                'vote' => $vote,
+                $object->getKey(),
+                $this->owner->getKey(),
+                $data['vote'],
             ]
         );
 
-        // You can perform some additional calculations here. Like updating the vote count on the post object.
-        ++$this->post->votes;
-        $this->post->save();
-
-        // Maybe fire an event or two.
-        //event(new NewPostVoteEvent($newVote));
-
-        return $newVote;
+        return $affectedRows;
     }
 
-    /**
-     * Delete the underling database entry for the action.
-     *
-     * @param mixed $object
-     *
-     * @return mixed
-     */
-    protected function destroy($object)
+    protected function destroy(EloquentModel $object)
     {
-        $oldVotes = PostVote::where('postId', $this->post->getKey())->where('userId', $object->getKey())->get();
+        $affectedRows = DB::affectingStatement(
+            "DELETE FROM post_votes WHERE userId = ? AND postId = ?",
+            [
+                $object->getKey(),
+                $this->owner->getKey(),
+            ]
+        );
 
-        $deleted = 0;
-        foreach ($oldVotes as $oldVote) {
-            --$this->post->votes;
-            $oldVote->delete();
-            ++$deleted;
-        }
-
-        return $deleted;
+        return $affectedRows;
     }
 }
