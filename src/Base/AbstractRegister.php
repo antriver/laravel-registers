@@ -180,6 +180,28 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     }
 
     /**
+     * Return the primary key of the given object, for checking against the items on the regisrer.
+     *
+     * @param EloquentModel $object
+     *
+     * @return mixed
+     */
+    protected function getObjectKey($object)
+    {
+        return $object->getKey();
+    }
+
+    /**
+     * Return the primary key of the owner of this register.
+     *
+     * @return mixed
+     */
+    protected function getOwnerKey()
+    {
+        return $this->owner->getKey();
+    }
+
+    /**
      * Returns a string to be the key for caching which objects are on this register.
      * Return null to disable use of Laravel's cache (will still use the in-memory cache).
      *
@@ -188,7 +210,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     protected function getCacheKey()
     {
         $reflect = new ReflectionClass($this);
-        return strtolower($reflect->getShortName()).':'.$this->owner->getKey();
+        return strtolower($reflect->getShortName()).':'.$this->getOwnerKey();
     }
 
     /**
@@ -201,7 +223,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     protected function getAlreadyOnRegisterException(EloquentModel $object)
     {
         $className = get_class($object);
-        $objectKey = $object->getKey();
+        $objectKey = $this->getObjectKey($object);
 
         return new AlreadyOnRegisterException("{$className} {$objectKey} is already on the register.");
     }
@@ -216,7 +238,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     protected function getNotOnRegisterException(EloquentModel $object)
     {
         $className = get_class($object);
-        $objectKey = $object->getKey();
+        $objectKey = $this->getObjectKey($object);
 
         return new NotOnRegisterException("{$className} {$objectKey} is not on the register.");
     }

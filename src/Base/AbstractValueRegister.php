@@ -15,7 +15,7 @@ abstract class AbstractValueRegister extends AbstractRegister
      */
     public function check(EloquentModel $object)
     {
-        $objectKey = $object->getKey();
+        $objectKey = $this->getObjectKey($object);
         $value = isset($this->all()[$objectKey]) ? $this->objects[$objectKey] : null;
 
         return $value;

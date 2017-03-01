@@ -15,7 +15,7 @@ abstract class AbstractBooleanRegister extends AbstractRegister
      */
     public function check(EloquentModel $object)
     {
-        $objectKey = $object->getKey();
+        $objectKey = $this->getObjectKey($object);
 
         return isset($this->all()[$objectKey]);
     }

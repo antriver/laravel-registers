@@ -17,7 +17,7 @@ class TestPostLikesRegister extends AbstractBooleanRegister
         $rows = DB::select(
             'SELECT userId FROM post_likes WHERE postId = ?',
             [
-                $this->owner->getKey(),
+                $this->getOwnerKey(),
             ]
         );
 
@@ -30,8 +30,8 @@ class TestPostLikesRegister extends AbstractBooleanRegister
         $affectedRows = DB::affectingStatement(
             'INSERT INTO post_likes (userId, postId) VALUES(?, ?) ON DUPLICATE KEY UPDATE userId = VALUES(userId)',
             [
-                $object->getKey(),
-                $this->owner->getKey(),
+                $this->getObjectKey($object),
+                $this->getOwnerKey(),
             ]
         );
 
@@ -52,8 +52,8 @@ class TestPostLikesRegister extends AbstractBooleanRegister
         $affectedRows = DB::affectingStatement(
             "DELETE FROM post_likes WHERE userId = ? AND postId = ?",
             [
-                $object->getKey(),
-                $this->owner->getKey(),
+                $this->getObjectKey($object),
+                $this->getOwnerKey(),
             ]
         );
 

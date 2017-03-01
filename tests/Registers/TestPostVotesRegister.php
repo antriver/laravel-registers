@@ -19,7 +19,7 @@ class TestPostVotesRegister extends AbstractValueRegister
         $rows = DB::select(
             'SELECT userId, vote FROM post_votes WHERE postId = ?',
             [
-                $this->owner->getKey(),
+                $this->getOwnerKey(),
             ]
         );
 
@@ -37,8 +37,8 @@ class TestPostVotesRegister extends AbstractValueRegister
             'INSERT INTO post_votes (userId, postId, vote) VALUES(?, ?, ?) 
              ON DUPLICATE KEY UPDATE vote = VALUES(vote)',
             [
-                $object->getKey(),
-                $this->owner->getKey(),
+                $this->getObjectKey($object),
+                $this->getOwnerKey(),
                 $data['vote'],
             ]
         );
@@ -51,8 +51,8 @@ class TestPostVotesRegister extends AbstractValueRegister
         $affectedRows = DB::affectingStatement(
             "DELETE FROM post_votes WHERE userId = ? AND postId = ?",
             [
-                $object->getKey(),
-                $this->owner->getKey(),
+                $this->getObjectKey($object),
+                $this->getOwnerKey(),
             ]
         );
 
