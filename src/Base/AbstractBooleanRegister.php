@@ -2,21 +2,17 @@
 
 namespace Tmd\LaravelRegisters\Base;
 
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-
 abstract class AbstractBooleanRegister extends AbstractRegister
 {
     /**
-     * Check if the given object is on the register.
+     * Check if the given key is on the register.
      *
-     * @param EloquentModel $object
+     * @param mixed $objectKey
      *
      * @return bool
      */
-    public function check(EloquentModel $object)
+    public function checkKey($objectKey)
     {
-        $objectKey = $this->getObjectKey($object);
-
         return isset($this->all()[$objectKey]);
     }
 }

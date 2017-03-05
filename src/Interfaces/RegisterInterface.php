@@ -38,6 +38,16 @@ interface RegisterInterface
     public function check(EloquentModel $object);
 
     /**
+     * Check if the given object key is on the register.
+     * May return a boolean, or data about that entry, depending upon the implementation.
+     *
+     * @param mixed $objectKey
+     *
+     * @return mixed
+     */
+    public function checkKey($objectKey);
+
+    /**
      * Return all the information about all of the objects on the register.
      *
      * @return array

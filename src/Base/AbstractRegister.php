@@ -106,6 +106,20 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     }
 
     /**
+     * Check if the given object is on the register.
+     *
+     * @param EloquentModel $object
+     *
+     * @return bool
+     */
+    public function check(EloquentModel $object)
+    {
+        $objectKey = $this->getObjectKey($object);
+
+        return $this->checkKey($objectKey);
+    }
+
+    /**
      * Returns all the information about all of the objects on the register.
      * Uses a cached copy if available.
      *
