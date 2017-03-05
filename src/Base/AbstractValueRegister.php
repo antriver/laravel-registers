@@ -9,11 +9,11 @@ abstract class AbstractValueRegister extends AbstractRegister
      *
      * @param mixed $objectKey
      *
-     * @return mixed
+     * @return bool|mixed
      */
     public function checkKey($objectKey)
     {
-        $value = isset($this->all()[$objectKey]) ? $this->objects[$objectKey] : null;
+        $value = isset($this->all()[$objectKey]) ? $this->objects[$objectKey] : false;
 
         return $value;
     }
