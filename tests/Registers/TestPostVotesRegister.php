@@ -3,7 +3,6 @@
 namespace Tmd\LaravelRegisters\Tests\Registers;
 
 use DB;
-use Exception;
 use Tmd\LaravelRegisters\Base\AbstractValueRegister;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Tmd\LaravelRegisters\Exceptions\MissingValueException;
@@ -14,6 +13,14 @@ use Tmd\LaravelRegisters\Exceptions\MissingValueException;
  */
 class TestPostVotesRegister extends AbstractValueRegister
 {
+    /**
+     * @param EloquentModel $owner
+     */
+    public function __construct(EloquentModel $owner)
+    {
+        $this->owner = $owner;
+    }
+
     protected function load()
     {
         $rows = DB::select(

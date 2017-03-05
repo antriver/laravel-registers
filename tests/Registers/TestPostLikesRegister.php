@@ -12,6 +12,14 @@ use Tmd\LaravelRegisters\Base\AbstractBooleanRegister;
  */
 class TestPostLikesRegister extends AbstractBooleanRegister
 {
+    /**
+     * @param EloquentModel $owner
+     */
+    public function __construct(EloquentModel $owner)
+    {
+        $this->owner = $owner;
+    }
+
     protected function load()
     {
         $rows = DB::select(

@@ -32,14 +32,6 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     protected $objects = null;
 
     /**
-     * @param EloquentModel $owner
-     */
-    public function __construct(EloquentModel $owner)
-    {
-        $this->owner = $owner;
-    }
-
-    /**
      * Query the database to find the objects on the register.
      * This should return an array where the array keys are the primary keys of the objects. (See README for more info.)
      *
