@@ -74,6 +74,8 @@ abstract class AbstractRegister implements RegisterInterface, Countable
         if ($result = $this->create($object, $data)) {
             $this->refresh();
 
+            $this->onAdd($object);
+
             return true;
         }
 
@@ -90,6 +92,8 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     {
         if ($response = $this->destroy($object)) {
             $this->refresh();
+
+            $this->onRemove($object);
 
             return true;
         }
@@ -271,5 +275,25 @@ abstract class AbstractRegister implements RegisterInterface, Countable
         }
 
         return $values;
+    }
+
+    /**
+     * Called when an object is added to the register.
+     *
+     * @param EloquentModel $object
+     */
+    protected function onAdd(EloquentModel $object)
+    {
+        // Does nothing by default.
+    }
+
+    /**
+     * Called when an object is removed from the register.
+     *
+     * @param EloquentModel $object
+     */
+    protected function onRemove(EloquentModel $object)
+    {
+        // Does nothing by default.
     }
 }
