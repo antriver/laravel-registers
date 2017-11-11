@@ -6,6 +6,7 @@ use Cache;
 use Countable;
 use Exception;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Support\Collection;
 use ReflectionClass;
 use Tmd\LaravelRegisters\Exceptions\AlreadyOnRegisterException;
 use Tmd\LaravelRegisters\Exceptions\NotOnRegisterException;
@@ -220,6 +221,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     protected function getCacheKey()
     {
         $reflect = new ReflectionClass($this);
+
         return strtolower($reflect->getShortName()).':'.$this->getOwnerKey();
     }
 
@@ -257,8 +259,8 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      * Takes an array of database results and returns an array where the specified column is used for the keys,
      * and the specified column is used for the values.
      *
-     * @param object[]    $rows
-     * @param string      $keyColumn
+     * @param object[]|Collection $rows
+     * @param string $keyColumn
      * @param string|bool $valueColumn If a string is given, that column from each row will be used as its value.
      *                                 Otherwise, the literal value of $valueColumn will be used.
      *
