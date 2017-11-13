@@ -7,9 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 trait TestableRegisterTrait
 {
     public $onAddCalled = false;
+
     public $onAddClosure = null;
+
     public $onRemoveCalled = false;
+
     public $onRemoveClosure = null;
+
+    public function publicGetCacheKey()
+    {
+        return $this->getCacheKey();
+    }
 
     protected function onAdd(Model $object)
     {

@@ -49,7 +49,7 @@ abstract class RegisterTestCase extends TestCase
 
         $this->assertSame(
             $this->expectedStoredData,
-            Cache::get($register->getCacheKey())
+            Cache::get($register->publicGetCacheKey())
         );
     }
 
@@ -63,14 +63,14 @@ abstract class RegisterTestCase extends TestCase
 
         $this->assertSame(
             $this->expectedStoredData,
-            Cache::get($register->getCacheKey())
+            Cache::get($register->publicGetCacheKey())
         );
 
         $register->remove($user);
 
         $this->assertSame(
             [],
-            Cache::get($register->getCacheKey())
+            Cache::get($register->publicGetCacheKey())
         );
     }
 
@@ -81,7 +81,7 @@ abstract class RegisterTestCase extends TestCase
         $user = $this->createUser();
 
         $this->assertNull(
-            Cache::get($register->getCacheKey())
+            Cache::get($register->publicGetCacheKey())
         );
 
         $this->assertEmpty($register->all());
@@ -90,16 +90,16 @@ abstract class RegisterTestCase extends TestCase
 
         $this->assertInternalType(
             'array',
-            Cache::get($register->getCacheKey())
+            Cache::get($register->publicGetCacheKey())
         );
 
         $this->assertSame(
             [],
-            Cache::get($register->getCacheKey())
+            Cache::get($register->publicGetCacheKey())
         );
 
         // Set something else in the cached array and ensure that is what is returned.
-        Cache::put($register->getCacheKey(), [123 => true], 1);
+        Cache::put($register->publicGetCacheKey(), [123 => true], 1);
 
         // Create a new register so the $object property cache is not used.
         unset($register);
@@ -107,7 +107,7 @@ abstract class RegisterTestCase extends TestCase
 
         $this->assertSame(
             [
-                123 => true
+                123 => true,
             ],
             $register2->all()
         );

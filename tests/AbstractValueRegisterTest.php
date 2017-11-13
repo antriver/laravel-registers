@@ -13,11 +13,6 @@ class AbstractValueRegisterTest extends RegisterTestCase
 
     protected $expectedStoredData = [99 => 'up'];
 
-    protected function createRegister(Model $owner): RegisterInterface
-    {
-        return new TestPostVotesRegister($owner);
-    }
-
     public function testExceptionIsThrownWithNoValue()
     {
         $post = $this->createPost();
@@ -43,7 +38,7 @@ class AbstractValueRegisterTest extends RegisterTestCase
 
         $this->assertSame(
             [
-                99 => 'up'
+                99 => 'up',
             ],
             $register->all()
         );
@@ -57,5 +52,10 @@ class AbstractValueRegisterTest extends RegisterTestCase
         $this->assertFalse($register->check($user));
         $this->assertSame(0, $register->count());
         $this->assertSame([], $register->keys());
+    }
+
+    protected function createRegister(Model $owner): RegisterInterface
+    {
+        return new TestPostVotesRegister($owner);
     }
 }

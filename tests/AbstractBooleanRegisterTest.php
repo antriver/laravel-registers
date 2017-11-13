@@ -12,11 +12,6 @@ class AbstractBooleanRegisterTest extends RegisterTestCase
 
     protected $expectedStoredData = [99 => true];
 
-    protected function createRegister(Model $owner): RegisterInterface
-    {
-        return new TestPostLikesRegister($owner);
-    }
-
     public function testAddThenRemoveObject()
     {
         $post = $this->createPost();
@@ -32,7 +27,7 @@ class AbstractBooleanRegisterTest extends RegisterTestCase
 
         $this->assertSame(
             [
-                99 => true
+                99 => true,
             ],
             $register->all()
         );
@@ -46,5 +41,10 @@ class AbstractBooleanRegisterTest extends RegisterTestCase
         $this->assertFalse($register->check($user));
         $this->assertSame(0, $register->count());
         $this->assertSame([], $register->keys());
+    }
+
+    protected function createRegister(Model $owner): RegisterInterface
+    {
+        return new TestPostLikesRegister($owner);
     }
 }

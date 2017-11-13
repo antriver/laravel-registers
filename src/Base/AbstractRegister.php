@@ -21,6 +21,13 @@ use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
 abstract class AbstractRegister implements RegisterInterface, Countable
 {
     /**
+     * A cache of the loaded objects that are on the register.
+     *
+     * @var null|array
+     */
+    protected $objects = null;
+
+    /**
      * This 'owner' is the model the list belongs to.
      * e.g.
      * For a 'Post Likers' register this should be the Post.
@@ -31,20 +38,13 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     protected $owner;
 
     /**
-     * A cache of the loaded objects that are on the register.
-     *
-     * @var null|array
-     */
-    protected $objects = null;
-
-    /**
      * Query the database to find the objects on the register.
      * This should return an array where the array keys are the primary keys of the objects.
      * (See README for more info.)
      *
      * @return array
      */
-    abstract protected function load();
+    abstract protected function load(): array;
 
     /**
      * Create the underling database entry for the action.
@@ -183,9 +183,9 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      *
      * @param bool $useCache
      *
-     * @return array|null
+     * @return array
      */
-    protected function getObjects($useCache = true)
+    protected function getObjects($useCache = true): array
     {
         // Use objects already in memory if available
         if ($useCache && is_array($this->objects)) {
@@ -237,7 +237,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      *
      * @return string|null
      */
-    public function getCacheKey(): ?string
+    protected function getCacheKey(): ?string
     {
         $reflect = new ReflectionClass($this);
 
@@ -249,9 +249,9 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      *
      * @param Model $object
      *
-     * @return Exception
+     * @return AlreadyOnRegisterException
      */
-    protected function getAlreadyOnRegisterException(Model $object)
+    protected function getAlreadyOnRegisterException(Model $object): AlreadyOnRegisterException
     {
         $className = get_class($object);
         $objectKey = $this->getObjectKey($object);
@@ -264,9 +264,9 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      *
      * @param Model $object
      *
-     * @return Exception
+     * @return NotOnRegisterException
      */
-    protected function getNotOnRegisterException(Model $object)
+    protected function getNotOnRegisterException(Model $object): NotOnRegisterException
     {
         $className = get_class($object);
         $objectKey = $this->getObjectKey($object);

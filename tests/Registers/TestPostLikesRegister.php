@@ -15,14 +15,6 @@ class TestPostLikesRegister extends AbstractBooleanRegister
 {
     use TestableRegisterTrait;
 
-    /**
-     * @param Model $owner
-     */
-    public function __construct(Model $owner)
-    {
-        $this->owner = $owner;
-    }
-
     protected function load()
     {
         $rows = DB::select(
@@ -75,5 +67,13 @@ class TestPostLikesRegister extends AbstractBooleanRegister
         }
 
         return $affectedRows;
+    }
+
+    /**
+     * @param Model $owner
+     */
+    public function __construct(Model $owner)
+    {
+        $this->owner = $owner;
     }
 }

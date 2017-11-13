@@ -16,11 +16,6 @@ class InjectableRegisterTest extends TestCase
 
     protected $expectedStoredData = [99 => true];
 
-    protected function createRegister(Model $owner): RegisterInterface
-    {
-        return new InjectableRegister($owner);
-    }
-
     public function testAddThenRemoveObject()
     {
         $post = $this->createPost();
@@ -36,7 +31,7 @@ class InjectableRegisterTest extends TestCase
 
         $this->assertSame(
             [
-                99 => true
+                99 => true,
             ],
             $register->all()
         );
@@ -88,5 +83,10 @@ class InjectableRegisterTest extends TestCase
         );
 
         $register->all();
+    }
+
+    protected function createRegister(Model $owner): RegisterInterface
+    {
+        return new InjectableRegister($owner);
     }
 }

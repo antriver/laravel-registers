@@ -3,8 +3,8 @@
 namespace Tmd\LaravelRegisters\Tests\Registers;
 
 use DB;
-use Tmd\LaravelRegisters\Base\AbstractValueRegister;
 use Illuminate\Database\Eloquent\Model;
+use Tmd\LaravelRegisters\Base\AbstractValueRegister;
 use Tmd\LaravelRegisters\Exceptions\MissingValueException;
 use Tmd\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
 
@@ -15,14 +15,6 @@ use Tmd\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
 class TestPostVotesRegister extends AbstractValueRegister
 {
     use TestableRegisterTrait;
-
-    /**
-     * @param Model $owner
-     */
-    public function __construct(Model $owner)
-    {
-        $this->owner = $owner;
-    }
 
     protected function load()
     {
@@ -67,5 +59,13 @@ class TestPostVotesRegister extends AbstractValueRegister
         );
 
         return $affectedRows;
+    }
+
+    /**
+     * @param Model $owner
+     */
+    public function __construct(Model $owner)
+    {
+        $this->owner = $owner;
     }
 }

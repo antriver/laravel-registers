@@ -16,6 +16,15 @@ trait RegisterTestSetupTrait
 
     abstract protected function createRegister(Model $owner): RegisterInterface;
 
+    public function tearDown()
+    {
+        \DB::delete("TRUNCATE TABLE post_likes");
+        \DB::delete("TRUNCATE TABLE post_votes");
+        \DB::delete("TRUNCATE TABLE posts");
+        \DB::delete("TRUNCATE TABLE users");
+        \Cache::flush();
+    }
+
     /**
      * Define environment setup.
      *
@@ -51,15 +60,6 @@ trait RegisterTestSetupTrait
                 ],
             ]
         );
-    }
-
-    public function tearDown()
-    {
-        \DB::delete("TRUNCATE TABLE post_likes");
-        \DB::delete("TRUNCATE TABLE post_votes");
-        \DB::delete("TRUNCATE TABLE posts");
-        \DB::delete("TRUNCATE TABLE users");
-        \Cache::flush();
     }
 
     protected function createPost()
