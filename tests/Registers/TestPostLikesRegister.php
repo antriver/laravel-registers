@@ -3,8 +3,9 @@
 namespace Tmd\LaravelRegisters\Tests\Registers;
 
 use DB;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Model;
 use Tmd\LaravelRegisters\Base\AbstractBooleanRegister;
+use Tmd\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
 
 /**
  * An example use of a a register that stores on/off values.
@@ -12,10 +13,12 @@ use Tmd\LaravelRegisters\Base\AbstractBooleanRegister;
  */
 class TestPostLikesRegister extends AbstractBooleanRegister
 {
+    use TestableRegisterTrait;
+
     /**
-     * @param EloquentModel $owner
+     * @param Model $owner
      */
-    public function __construct(EloquentModel $owner)
+    public function __construct(Model $owner)
     {
         $this->owner = $owner;
     }
@@ -32,7 +35,7 @@ class TestPostLikesRegister extends AbstractBooleanRegister
         return $this->buildObjectsArrayFromLoadedData($rows, 'userId');
     }
 
-    protected function create(EloquentModel $object, array $data = [])
+    protected function create(Model $object, array $data = []): int
     {
         // Inserts into the post_likes table. Does nothing if it already exists in the table.
         $affectedRows = DB::affectingStatement(
@@ -55,7 +58,7 @@ class TestPostLikesRegister extends AbstractBooleanRegister
         return $affectedRows;
     }
 
-    protected function destroy(EloquentModel $object)
+    protected function destroy(Model $object): int
     {
         $affectedRows = DB::affectingStatement(
             "DELETE FROM post_likes WHERE userId = ? AND postId = ?",

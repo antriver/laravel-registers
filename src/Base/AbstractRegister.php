@@ -5,7 +5,7 @@ namespace Tmd\LaravelRegisters\Base;
 use Cache;
 use Countable;
 use Exception;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use Tmd\LaravelRegisters\Exceptions\AlreadyOnRegisterException;
@@ -21,20 +21,26 @@ use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
 abstract class AbstractRegister implements RegisterInterface, Countable
 {
     /**
-     * This 'owner' is the model the list belongs to. In the case of a 'post likes' register this should be the post.
+     * This 'owner' is the model the list belongs to.
+     * e.g.
+     * For a 'Post Likers' register this should be the Post.
+     * For a 'User Liked Posts' register, the owner is the User.
      *
-     * @var EloquentModel
+     * @var Model
      */
     protected $owner;
 
     /**
+     * A cache of the loaded objects that are on the register.
+     *
      * @var null|array
      */
     protected $objects = null;
 
     /**
      * Query the database to find the objects on the register.
-     * This should return an array where the array keys are the primary keys of the objects. (See README for more info.)
+     * This should return an array where the array keys are the primary keys of the objects.
+     * (See README for more info.)
      *
      * @return array
      */
@@ -42,74 +48,88 @@ abstract class AbstractRegister implements RegisterInterface, Countable
 
     /**
      * Create the underling database entry for the action.
-     * e.g. an entry in the post_likes table
+     * e.g. Insert an entry in the post_likes table
+     * Return the number of affected rows.
      *
-     * @param mixed $object
+     * @param Model $object
      * @param array $data
      *
      * @return int
      */
-    abstract protected function create(EloquentModel $object, array $data = []);
+    abstract protected function create(Model $object, array $data = []): int;
 
     /**
      * Delete the underling database entry for the action.
-     * e.g. an entry in the post_likes table
+     * e.g. Delete an entry from the post_likes table
+     * Return the number of affected rows.
      *
-     * @param mixed $object
+     * @param Model $object
      *
-     * @return mixed
+     * @return int
      */
-    abstract protected function destroy(EloquentModel $object);
+    abstract protected function destroy(Model $object): int;
 
     /**
-     * Add the given object to the register.
+     * Add the given Model to the register.
      *
-     * @param mixed $object
-     * @param array $data
-     *
-     * @return boolean
-     * @throws Exception
-     */
-    public function add(EloquentModel $object, array $data = [])
-    {
-        if ($result = $this->create($object, $data)) {
-            $this->refresh();
-
-            $this->onAdd($object);
-
-            return true;
-        }
-
-        throw $this->getAlreadyOnRegisterException($object);
-    }
-
-    /**
-     * @param mixed $object
-     *
-     * @return mixed
-     * @throws Exception
-     */
-    public function remove(EloquentModel $object)
-    {
-        if ($response = $this->destroy($object)) {
-            $this->refresh();
-
-            $this->onRemove($object);
-
-            return true;
-        }
-
-        throw $this->getNotOnRegisterException($object);
-    }
-
-    /**
-     * Check if the given object is on the register.
-     *
-     * @param EloquentModel $object
+     * @param Model $object
+     * @param array $data Optional additional data to pass to the register (needed for ValueRegister).
      *
      * @return bool
+     * @throws Exception
      */
-    public function check(EloquentModel $object)
+    public function add(Model $object, array $data = []): bool
+    {
+        if ($this->beforeAdd($object) !== true) {
+            return false;
+        }
+
+        if ($affectedRows = $this->create($object, $data)) {
+            $this->refresh();
+            $this->afterAdd($object, true);
+
+            return true;
+        } else {
+            $this->afterAdd($object, false);
+            throw $this->getAlreadyOnRegisterException($object);
+        }
+    }
+
+    /**
+     * Remove the given Model from the register.
+     *
+     * @param Model $object
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function remove(Model $object): bool
+    {
+        if ($this->beforeRemove($object) !== true) {
+            return false;
+        }
+
+        if ($deletedRows = $this->destroy($object)) {
+            $this->refresh();
+            $this->afterRemove($object, $deletedRows);
+
+            return true;
+        } else {
+            $this->afterRemove($object, false);
+
+            throw $this->getNotOnRegisterException($object);
+        }
+    }
+
+    /**
+     * Check if the given Model is on the register.
+     * May return a boolean, or data about that entry, depending upon the implementation.
+     *
+     * @param Model $object
+     *
+     * @return mixed
+     */
+    public function check(Model $object)
     {
         $objectKey = $this->getObjectKey($object);
 
@@ -117,32 +137,33 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     }
 
     /**
-     * Returns all the information about all of the objects on the register.
+     * Return all the information about all of the objects on the register.
      * Uses a cached copy if available.
      *
      * @return array
      */
-    public function all()
+    public function all(): array
     {
         return $this->getObjects(true);
     }
 
     /**
-     * Updates the cache of objects on the register, and returns all the items.
+     * Clear any cached data about the objects on the register.
+     * Returns a fresh copy of information about all of the objects on the register (the same as all())
      *
      * @return array
      */
-    public function refresh()
+    public function refresh(): array
     {
         return $this->getObjects(false);
     }
 
     /**
-     * Return an array of the keys of objects on the register.
+     * Return a single dimensional array of the keys of the objects on the register.
      *
      * @return array
      */
-    public function keys()
+    public function keys(): array
     {
         return array_keys($this->all());
     }
@@ -152,15 +173,13 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->all());
     }
 
     /**
      * Returns information about all the objects on the register.
-     * Gets from (in order of preference):
-     * 1. In
      *
      * @param bool $useCache
      *
@@ -193,7 +212,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     /**
      * Return the primary key of the given object, for checking against the items on the regisrer.
      *
-     * @param EloquentModel $object
+     * @param Model $object
      *
      * @return mixed
      */
@@ -218,7 +237,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      *
      * @return string|null
      */
-    protected function getCacheKey()
+    public function getCacheKey(): ?string
     {
         $reflect = new ReflectionClass($this);
 
@@ -228,11 +247,11 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     /**
      * Returns (not throws) the Exception to be thrown when trying to add an object already on the register.
      *
-     * @param EloquentModel $object
+     * @param Model $object
      *
      * @return Exception
      */
-    protected function getAlreadyOnRegisterException(EloquentModel $object)
+    protected function getAlreadyOnRegisterException(Model $object)
     {
         $className = get_class($object);
         $objectKey = $this->getObjectKey($object);
@@ -243,11 +262,11 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     /**
      * Returns (not throws) the Exception to be thrown when trying to remove an object not on the register.
      *
-     * @param EloquentModel $object
+     * @param Model $object
      *
      * @return Exception
      */
-    protected function getNotOnRegisterException(EloquentModel $object)
+    protected function getNotOnRegisterException(Model $object)
     {
         $className = get_class($object);
         $objectKey = $this->getObjectKey($object);
@@ -280,22 +299,62 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     }
 
     /**
-     * Called when an object is added to the register.
+     * This method is called before any modification is done by the add() method.
+     * If it returns anything other than true the modification will be aborted.
      *
-     * @param EloquentModel $object
+     * @param Model $model
+     *
+     * @return bool
      */
-    protected function onAdd(EloquentModel $object)
+    protected function beforeAdd(Model $model): bool
     {
-        // Does nothing by default.
+        return true;
     }
 
     /**
-     * Called when an object is removed from the register.
+     * This method is called after any modification is finished by the add() method.
+     * It is called even if they do not succeed.
+     * If the add did not succeed an Exception will be thrown by add(). This is called before the exception is thrown
+     * to allow for any cleanup to run (releasing locks maybe?)
      *
-     * @param EloquentModel $object
+     * @param Model $model
+     * @param bool $success
      */
-    protected function onRemove(EloquentModel $object)
+    protected function afterAdd(Model $model, bool $success)
     {
-        // Does nothing by default.
+        // Backward-compatibility.
+        if ($success && method_exists($this, 'onAdd')) {
+            $this->onAdd($model);
+        }
+    }
+
+    /**
+     * This method is called before any modification is done by the remove() method.
+     * If it returns anything other than true the modification will be aborted.
+     *
+     * @param Model $model
+     *
+     * @return bool
+     */
+    protected function beforeRemove(Model $model): bool
+    {
+        return true;
+    }
+
+    /**
+     * This method is called after any modification is finished by the remove() method.
+     * It is called even if they do not succeed.
+     * If the remove did not succeed an Exception will be thrown by remove(). This is called before the exception is
+     * thrown to allow for any cleanup to run (releasing locks maybe?)
+     *
+     * @param Model $model
+     * @param int $deletedRows The number of rows that were deleted (may be 0 to indicate a failure).
+     */
+    protected function afterRemove(Model $model, int $deletedRows = 0)
+    {
+        // Backward-compatibility.
+        if ($deletedRows > 0 && method_exists($this, 'onRemove')) {
+            $this->onRemove($model);
+        }
     }
 }

@@ -4,8 +4,9 @@ namespace Tmd\LaravelRegisters\Tests\Registers;
 
 use DB;
 use Tmd\LaravelRegisters\Base\AbstractValueRegister;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Model;
 use Tmd\LaravelRegisters\Exceptions\MissingValueException;
+use Tmd\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
 
 /**
  * An example use of a a register that stores additional data for the objects on it.
@@ -13,10 +14,12 @@ use Tmd\LaravelRegisters\Exceptions\MissingValueException;
  */
 class TestPostVotesRegister extends AbstractValueRegister
 {
+    use TestableRegisterTrait;
+
     /**
-     * @param EloquentModel $owner
+     * @param Model $owner
      */
-    public function __construct(EloquentModel $owner)
+    public function __construct(Model $owner)
     {
         $this->owner = $owner;
     }
@@ -33,7 +36,7 @@ class TestPostVotesRegister extends AbstractValueRegister
         return $this->buildObjectsArrayFromLoadedData($rows, 'userId', 'vote');
     }
 
-    protected function create(EloquentModel $object, array $data = [])
+    protected function create(Model $object, array $data = []): int
     {
         if (empty($data['vote'])) {
             throw new MissingValueException("Vote is required.");
@@ -53,7 +56,7 @@ class TestPostVotesRegister extends AbstractValueRegister
         return $affectedRows;
     }
 
-    protected function destroy(EloquentModel $object)
+    protected function destroy(Model $object): int
     {
         $affectedRows = DB::affectingStatement(
             "DELETE FROM post_votes WHERE userId = ? AND postId = ?",

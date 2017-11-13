@@ -5,11 +5,13 @@ namespace Tmd\LaravelRegisters\Base;
 abstract class AbstractBooleanRegister extends AbstractRegister
 {
     /**
-     * Check if the given key is on the register.
+     * Check if the given primary key is on the register.
+     * If not found: Will return boolean false.
+     * If found: Will return boolean true.
      *
      * @param mixed $objectKey
      *
-     * @return bool
+     * @return boolean
      */
     public function checkKey($objectKey)
     {

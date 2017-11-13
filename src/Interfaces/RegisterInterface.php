@@ -2,76 +2,80 @@
 
 namespace Tmd\LaravelRegisters\Interfaces;
 
-use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Exception;
+use Illuminate\Database\Eloquent\Model;
 
 interface RegisterInterface
 {
     /**
-     * Add the given object to the register.
-     * May return a boolean, or data about that entry, depending upon the implementation.
+     * Add the given Model to the register.
      *
-     * @param mixed $object
-     * @param array $data Optional additional data to pass to the register.
+     * @param Model $object
+     * @param array $data Optional additional data to pass to the register (needed for ValueRegister).
      *
-     * @return boolean
+     * @return bool
+     * @throws Exception
      */
-    public function add(EloquentModel $object, array $data = []);
+    public function add(Model $object, array $data = []): bool;
 
     /**
-     * Remove the given object from the register.
+     * Remove the given Model from the register.
+     *
+     * @param Model $object
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function remove(Model $object): bool;
+
+    /**
+     * Check if the given Model is on the register.
      * May return a boolean, or data about that entry, depending upon the implementation.
      *
-     * @param EloquentModel $object
+     * @param Model $object
      *
      * @return mixed
      */
-    public function remove(EloquentModel $object);
+    public function check(Model $object);
 
     /**
-     * Check if the given object is on the register.
-     * May return a boolean, or data about that entry, depending upon the implementation.
-     *
-     * @param EloquentModel $object
-     *
-     * @return mixed
-     */
-    public function check(EloquentModel $object);
-
-    /**
-     * Check if the given object key is on the register.
-     * May return a boolean, or data about that entry, depending upon the implementation.
+     * Check if the given primary key is on the register.
+     * If not found: Will return boolean false.
+     * If found: Will return boolean true, or data about that entry, depending upon the implementation.
      *
      * @param mixed $objectKey
      *
-     * @return mixed
+     * @return mixed|boolean
      */
     public function checkKey($objectKey);
 
     /**
      * Return all the information about all of the objects on the register.
+     * Uses a cached copy if available.
      *
      * @return array
      */
-    public function all();
+    public function all(): array;
+
+    /**
+     * Clear any cached data about the objects on the register.
+     * Returns a fresh copy of information about all of the objects on the register (the same as all())
+     *
+     * @return array
+     */
+    public function refresh(): array;
 
     /**
      * Return a single dimensional array of the keys of the objects on the register.
      *
      * @return array
      */
-    public function keys();
+    public function keys(): array;
 
     /**
      * Return the number of objects on the register.
      *
      * @return int
      */
-    public function count();
-
-    /**
-     * Clear any cached data about the objects on the register.
-     *
-     * @return mixed
-     */
-    public function refresh();
+    public function count(): int;
 }
