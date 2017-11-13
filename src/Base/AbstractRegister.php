@@ -300,7 +300,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
 
     /**
      * This method is called before any modification is done by the add() method.
-     * If it returns anything other than true the modification will be aborted.
+     * If it returns false add will be aborted.
      *
      * @param Model $model
      *
@@ -330,7 +330,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
 
     /**
      * This method is called before any modification is done by the remove() method.
-     * If it returns anything other than true the modification will be aborted.
+     * If it returns false the removal will be aborted.
      *
      * @param Model $model
      *

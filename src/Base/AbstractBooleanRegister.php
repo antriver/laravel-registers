@@ -11,7 +11,7 @@ abstract class AbstractBooleanRegister extends AbstractRegister
      *
      * @param mixed $objectKey
      *
-     * @return boolean
+     * @return bool
      */
     public function checkKey($objectKey)
     {

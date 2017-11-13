@@ -10,7 +10,7 @@ abstract class AbstractValueRegister extends AbstractRegister
      *
      * @param mixed $objectKey
      *
-     * @return mixed|boolean
+     * @return mixed|bool
      */
     public function checkKey($objectKey)
     {
