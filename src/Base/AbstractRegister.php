@@ -70,6 +70,17 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     abstract protected function destroy(Model $object): int;
 
     /**
+     * Delete all of the underlying database entries for.
+     *
+     * @return int
+     * @throws Exception
+     */
+    protected function destroyAll(): int
+    {
+        throw new Exception('destroyAll() is not available for '.get_class($this));
+    }
+
+    /**
      * Add the given Model to the register.
      *
      * @param Model $object
@@ -118,6 +129,23 @@ abstract class AbstractRegister implements RegisterInterface, Countable
             $this->afterRemove($object, false);
 
             throw $this->getNotOnRegisterException($object);
+        }
+    }
+
+    /**
+     * Remove all of the objects on the register.
+     *
+     * @return bool
+     */
+    public function removeAll(): bool
+    {
+        if ($deletedRows = $this->destroyAll()) {
+            $this->refresh();
+
+            return true;
+        } else {
+
+            return false;
         }
     }
 
