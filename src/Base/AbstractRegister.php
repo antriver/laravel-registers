@@ -210,7 +210,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     }
 
     /**
-     * Return the primary key of the given object, for checking against the items on the regisrer.
+     * Return the primary key of the given object, for checking against the items on the register.
      *
      * @param Model $object
      *
