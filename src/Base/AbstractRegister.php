@@ -338,7 +338,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      * @param bool $success
      * @param array $data
      */
-    protected function afterCreate(Model $object, bool $success, array $data = [, $data])
+    protected function afterCreate(Model $object, bool $success, array $data = [])
     {
         // Backward-compatibility.
         if ($success && method_exists($this, 'onAdd')) {
