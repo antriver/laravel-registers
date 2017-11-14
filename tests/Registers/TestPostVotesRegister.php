@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Database\Eloquent\Model;
 use Tmd\LaravelRegisters\Base\AbstractValueRegister;
 use Tmd\LaravelRegisters\Exceptions\MissingValueException;
+use Tmd\LaravelRegisters\Tests\Models\Post;
 use Tmd\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
 
 /**
@@ -16,7 +17,25 @@ class TestPostVotesRegister extends AbstractValueRegister
 {
     use TestableRegisterTrait;
 
-    protected function load()
+    /**
+     * @var Post
+     */
+    protected $post;
+
+    /**
+     * @param Post $post
+     */
+    public function __construct(Post $post)
+    {
+        $this->post = $post;
+    }
+
+    protected function getOwnerKey()
+    {
+        return $this->post->getKey();
+    }
+
+    protected function load(): array
     {
         $rows = DB::select(
             'SELECT userId, vote FROM post_votes WHERE postId = ?',
@@ -59,13 +78,5 @@ class TestPostVotesRegister extends AbstractValueRegister
         );
 
         return $affectedRows;
-    }
-
-    /**
-     * @param Model $owner
-     */
-    public function __construct(Model $owner)
-    {
-        $this->owner = $owner;
     }
 }

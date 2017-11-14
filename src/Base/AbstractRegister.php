@@ -69,17 +69,6 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     abstract protected function destroy(Model $object): int;
 
     /**
-     * Delete all of the underlying database entries for.
-     *
-     * @return int
-     * @throws Exception
-     */
-    protected function destroyAll(): int
-    {
-        throw new Exception('destroyAll() is not available for '.get_class($this));
-    }
-
-    /**
      * Add the given Model to the register.
      *
      * @param Model $object
@@ -203,6 +192,17 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     public function count(): int
     {
         return count($this->all());
+    }
+
+    /**
+     * Delete all of the underlying database entries for.
+     *
+     * @return int
+     * @throws Exception
+     */
+    protected function destroyAll(): int
+    {
+        throw new Exception('destroyAll() is not available for '.get_class($this));
     }
 
     /**
