@@ -79,17 +79,17 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      */
     public function add(Model $object, array $data = []): bool
     {
-        if ($this->beforeAdd($object) !== true) {
+        if ($this->beforeCreate($object) !== true) {
             return false;
         }
 
         if ($affectedRows = $this->create($object, $data)) {
             $this->refresh();
-            $this->afterAdd($object, true);
+            $this->afterCreate($object, true);
 
             return true;
         } else {
-            $this->afterAdd($object, false);
+            $this->afterCreate($object, false);
             throw $this->getAlreadyOnRegisterException($object);
         }
     }
@@ -104,17 +104,17 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      */
     public function remove(Model $object): bool
     {
-        if ($this->beforeRemove($object) !== true) {
+        if ($this->beforeDestroy($object) !== true) {
             return false;
         }
 
         if ($deletedRows = $this->destroy($object)) {
             $this->refresh();
-            $this->afterRemove($object, $deletedRows);
+            $this->afterDestroy($object, $deletedRows);
 
             return true;
         } else {
-            $this->afterRemove($object, false);
+            $this->afterDestroy($object, false);
 
             throw $this->getNotOnRegisterException($object);
         }
@@ -323,7 +323,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      *
      * @return bool
      */
-    protected function beforeAdd(Model $object): bool
+    protected function beforeCreate(Model $object): bool
     {
         return true;
     }
@@ -337,7 +337,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      * @param Model $object
      * @param bool $success
      */
-    protected function afterAdd(Model $object, bool $success)
+    protected function afterCreate(Model $object, bool $success)
     {
         // Backward-compatibility.
         if ($success && method_exists($this, 'onAdd')) {
@@ -353,7 +353,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      *
      * @return bool
      */
-    protected function beforeRemove(Model $object): bool
+    protected function beforeDestroy(Model $object): bool
     {
         return true;
     }
@@ -367,7 +367,7 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      * @param Model $object
      * @param int $deletedRows The number of rows that were deleted (may be 0 to indicate a failure).
      */
-    protected function afterRemove(Model $object, int $deletedRows = 0)
+    protected function afterDestroy(Model $object, int $deletedRows = 0)
     {
         // Backward-compatibility.
         if ($deletedRows > 0 && method_exists($this, 'onRemove')) {
