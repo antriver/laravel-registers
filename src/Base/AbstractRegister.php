@@ -85,11 +85,11 @@ abstract class AbstractRegister implements RegisterInterface, Countable
 
         if ($affectedRows = $this->create($object, $data)) {
             $this->refresh();
-            $this->afterCreate($object, true);
+            $this->afterCreate($object, true, $data);
 
             return true;
         } else {
-            $this->afterCreate($object, false);
+            $this->afterCreate($object, false, $data);
             throw $this->getAlreadyOnRegisterException($object);
         }
     }
@@ -336,8 +336,9 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      *
      * @param Model $object
      * @param bool $success
+     * @param array $data
      */
-    protected function afterCreate(Model $object, bool $success)
+    protected function afterCreate(Model $object, bool $success, array $data = [, $data])
     {
         // Backward-compatibility.
         if ($success && method_exists($this, 'onAdd')) {
