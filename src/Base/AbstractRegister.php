@@ -330,11 +330,11 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      * This method is called before any modification is done by the add() method.
      * If it returns false add will be aborted.
      *
-     * @param Model $model
+     * @param Model $object
      *
      * @return bool
      */
-    protected function beforeAdd(Model $model): bool
+    protected function beforeAdd(Model $object): bool
     {
         return true;
     }
@@ -345,14 +345,14 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      * If the add did not succeed an Exception will be thrown by add(). This is called before the exception is thrown
      * to allow for any cleanup to run (releasing locks maybe?)
      *
-     * @param Model $model
+     * @param Model $object
      * @param bool $success
      */
-    protected function afterAdd(Model $model, bool $success)
+    protected function afterAdd(Model $object, bool $success)
     {
         // Backward-compatibility.
         if ($success && method_exists($this, 'onAdd')) {
-            $this->onAdd($model);
+            $this->onAdd($object);
         }
     }
 
@@ -360,11 +360,11 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      * This method is called before any modification is done by the remove() method.
      * If it returns false the removal will be aborted.
      *
-     * @param Model $model
+     * @param Model $object
      *
      * @return bool
      */
-    protected function beforeRemove(Model $model): bool
+    protected function beforeRemove(Model $object): bool
     {
         return true;
     }
@@ -375,14 +375,14 @@ abstract class AbstractRegister implements RegisterInterface, Countable
      * If the remove did not succeed an Exception will be thrown by remove(). This is called before the exception is
      * thrown to allow for any cleanup to run (releasing locks maybe?)
      *
-     * @param Model $model
+     * @param Model $object
      * @param int $deletedRows The number of rows that were deleted (may be 0 to indicate a failure).
      */
-    protected function afterRemove(Model $model, int $deletedRows = 0)
+    protected function afterRemove(Model $object, int $deletedRows = 0)
     {
         // Backward-compatibility.
         if ($deletedRows > 0 && method_exists($this, 'onRemove')) {
-            $this->onRemove($model);
+            $this->onRemove($object);
         }
     }
 }
