@@ -15,7 +15,9 @@ use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
 /**
  * A register is a simple list of models belonging to another model.
  * E.g. users a user follows, posts a user loves, or topics a post is in.
- * The "owner" of the register is who the objects belong to.
+ * The "owner" of the register is who the objects belong to. Note that the owner property has been removed in favor
+ * of setting your own property with a more understandable name ($user, $post, etc.) and implementing the
+ * getOwnerKey() method yourself.
  * The "object" is the item being added to the register.
  */
 abstract class AbstractRegister implements RegisterInterface, Countable
@@ -28,14 +30,11 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     protected $objects = null;
 
     /**
-     * This 'owner' is the model the list belongs to.
-     * e.g.
-     * For a 'Post Likers' register this should be the Post.
-     * For a 'User Liked Posts' register, the owner is the User.
+     * Return the primary key of the owner of this register.
      *
-     * @var Model
+     * @return mixed
      */
-    protected $owner;
+    abstract protected function getOwnerKey();
 
     /**
      * Query the database to find the objects on the register.
@@ -247,16 +246,6 @@ abstract class AbstractRegister implements RegisterInterface, Countable
     protected function getObjectKey($object)
     {
         return $object->getKey();
-    }
-
-    /**
-     * Return the primary key of the owner of this register.
-     *
-     * @return mixed
-     */
-    protected function getOwnerKey()
-    {
-        return $this->owner->getKey();
     }
 
     /**
