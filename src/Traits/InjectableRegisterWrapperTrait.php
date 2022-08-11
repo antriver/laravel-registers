@@ -1,10 +1,10 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Traits;
+namespace Antriver\LaravelRegisters\Traits;
 
 use Illuminate\Database\Eloquent\Model;
-use Tmd\LaravelRegisters\Exceptions\RegisterNotReadyException;
-use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
+use Antriver\LaravelRegisters\Exceptions\RegisterNotReadyException;
+use Antriver\LaravelRegisters\Interfaces\RegisterInterface;
 
 /**
  * Provides a wrapper around a real register object. This can be used to

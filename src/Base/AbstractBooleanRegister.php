@@ -1,6 +1,6 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Base;
+namespace Antriver\LaravelRegisters\Base;
 
 abstract class AbstractBooleanRegister extends AbstractRegister
 {

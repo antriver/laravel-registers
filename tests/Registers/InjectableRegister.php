@@ -1,11 +1,11 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Tests\Registers;
+namespace Antriver\LaravelRegisters\Tests\Registers;
 
 use Illuminate\Database\Eloquent\Model;
-use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
-use Tmd\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
-use Tmd\LaravelRegisters\Traits\InjectableRegisterWrapperTrait;
+use Antriver\LaravelRegisters\Interfaces\RegisterInterface;
+use Antriver\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
+use Antriver\LaravelRegisters\Traits\InjectableRegisterWrapperTrait;
 
 class InjectableRegister implements RegisterInterface
 {

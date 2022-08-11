@@ -1,6 +1,6 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Exceptions;
+namespace Antriver\LaravelRegisters\Exceptions;
 
 class NotOnRegisterException extends \Exception
 {

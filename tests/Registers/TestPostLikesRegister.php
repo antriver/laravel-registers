@@ -1,12 +1,12 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Tests\Registers;
+namespace Antriver\LaravelRegisters\Tests\Registers;
 
 use DB;
 use Illuminate\Database\Eloquent\Model;
-use Tmd\LaravelRegisters\Base\AbstractBooleanRegister;
-use Tmd\LaravelRegisters\Tests\Models\Post;
-use Tmd\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
+use Antriver\LaravelRegisters\Base\AbstractBooleanRegister;
+use Antriver\LaravelRegisters\Tests\Models\Post;
+use Antriver\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
 
 /**
  * An example use of a a register that stores on/off values.

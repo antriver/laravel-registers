@@ -1,11 +1,11 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Tests;
+namespace Antriver\LaravelRegisters\Tests;
 
 use Illuminate\Database\Eloquent\Model;
-use Tmd\LaravelRegisters\Exceptions\MissingValueException;
-use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
-use Tmd\LaravelRegisters\Tests\Registers\TestPostVotesRegister;
+use Antriver\LaravelRegisters\Exceptions\MissingValueException;
+use Antriver\LaravelRegisters\Interfaces\RegisterInterface;
+use Antriver\LaravelRegisters\Tests\Registers\TestPostVotesRegister;
 
 class AbstractValueRegisterTest extends RegisterTestCase
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Tests\Registers;
+namespace Antriver\LaravelRegisters\Tests\Registers;
 
 use DB;
 use Illuminate\Database\Eloquent\Model;
-use Tmd\LaravelRegisters\Base\AbstractValueRegister;
-use Tmd\LaravelRegisters\Exceptions\MissingValueException;
-use Tmd\LaravelRegisters\Tests\Models\Post;
-use Tmd\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
+use Antriver\LaravelRegisters\Base\AbstractValueRegister;
+use Antriver\LaravelRegisters\Exceptions\MissingValueException;
+use Antriver\LaravelRegisters\Tests\Models\Post;
+use Antriver\LaravelRegisters\Tests\Registers\Traits\TestableRegisterTrait;
 
 /**
  * An example use of a a register that stores additional data for the objects on it.

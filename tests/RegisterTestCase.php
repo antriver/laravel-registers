@@ -1,11 +1,11 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Tests;
+namespace Antriver\LaravelRegisters\Tests;
 
 use Cache;
 use Orchestra\Testbench\TestCase;
-use Tmd\LaravelRegisters\Exceptions\AlreadyOnRegisterException;
-use Tmd\LaravelRegisters\Exceptions\NotOnRegisterException;
+use Antriver\LaravelRegisters\Exceptions\AlreadyOnRegisterException;
+use Antriver\LaravelRegisters\Exceptions\NotOnRegisterException;
 
 abstract class RegisterTestCase extends TestCase
 {

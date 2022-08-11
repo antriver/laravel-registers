@@ -1,6 +1,6 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Tests\Models;
+namespace Antriver\LaravelRegisters\Tests\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

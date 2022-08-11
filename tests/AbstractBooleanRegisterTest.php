@@ -1,10 +1,10 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Tests;
+namespace Antriver\LaravelRegisters\Tests;
 
 use Illuminate\Database\Eloquent\Model;
-use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
-use Tmd\LaravelRegisters\Tests\Registers\TestPostLikesRegister;
+use Antriver\LaravelRegisters\Interfaces\RegisterInterface;
+use Antriver\LaravelRegisters\Tests\Registers\TestPostLikesRegister;
 
 class AbstractBooleanRegisterTest extends RegisterTestCase
 {

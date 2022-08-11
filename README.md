@@ -10,7 +10,7 @@ The `object` is what you add to the register / check is on the register / delete
 
 ## Installation
 ```
-composer require tmd/laravel-registers
+composer require antriver/laravel-registers
 ```
 
 ## Integration

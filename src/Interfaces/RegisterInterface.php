@@ -1,6 +1,6 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Interfaces;
+namespace Antriver\LaravelRegisters\Interfaces;
 
 use Exception;
 use Illuminate\Database\Eloquent\Model;

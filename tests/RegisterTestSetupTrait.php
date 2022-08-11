@@ -1,11 +1,11 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Tests;
+namespace Antriver\LaravelRegisters\Tests;
 
 use Illuminate\Database\Eloquent\Model;
-use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
-use Tmd\LaravelRegisters\Tests\Models\Post;
-use Tmd\LaravelRegisters\Tests\Models\User;
+use Antriver\LaravelRegisters\Interfaces\RegisterInterface;
+use Antriver\LaravelRegisters\Tests\Models\Post;
+use Antriver\LaravelRegisters\Tests\Models\User;
 
 trait RegisterTestSetupTrait
 {
@@ -16,7 +16,7 @@ trait RegisterTestSetupTrait
 
     abstract protected function createRegister(Model $owner): RegisterInterface;
 
-    public function tearDown()
+    public function tearDown(): void
     {
         \DB::delete("TRUNCATE TABLE post_likes");
         \DB::delete("TRUNCATE TABLE post_votes");

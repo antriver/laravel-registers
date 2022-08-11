@@ -1,12 +1,12 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Tests;
+namespace Antriver\LaravelRegisters\Tests;
 
 use Illuminate\Database\Eloquent\Model;
 use Orchestra\Testbench\TestCase;
-use Tmd\LaravelRegisters\Exceptions\RegisterNotReadyException;
-use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
-use Tmd\LaravelRegisters\Tests\Registers\InjectableRegister;
+use Antriver\LaravelRegisters\Exceptions\RegisterNotReadyException;
+use Antriver\LaravelRegisters\Interfaces\RegisterInterface;
+use Antriver\LaravelRegisters\Tests\Registers\InjectableRegister;
 
 class InjectableRegisterTest extends TestCase
 {
@@ -53,7 +53,7 @@ class InjectableRegisterTest extends TestCase
 
         $this->expectException(RegisterNotReadyException::class);
         $this->expectExceptionMessage(
-            'The register Tmd\LaravelRegisters\Tests\Registers\InjectableRegister has not been instantiated.'
+            'The register Antriver\LaravelRegisters\Tests\Registers\InjectableRegister has not been instantiated.'
         );
 
         $user = $this->createUser();
@@ -66,7 +66,7 @@ class InjectableRegisterTest extends TestCase
 
         $this->expectException(RegisterNotReadyException::class);
         $this->expectExceptionMessage(
-            'The register Tmd\LaravelRegisters\Tests\Registers\InjectableRegister has not been instantiated.'
+            'The register Antriver\LaravelRegisters\Tests\Registers\InjectableRegister has not been instantiated.'
         );
 
         $user = $this->createUser();
@@ -79,7 +79,7 @@ class InjectableRegisterTest extends TestCase
 
         $this->expectException(RegisterNotReadyException::class);
         $this->expectExceptionMessage(
-            'The register Tmd\LaravelRegisters\Tests\Registers\InjectableRegister has not been instantiated.'
+            'The register Antriver\LaravelRegisters\Tests\Registers\InjectableRegister has not been instantiated.'
         );
 
         $register->all();

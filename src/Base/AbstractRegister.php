@@ -1,6 +1,6 @@
 <?php
 
-namespace Tmd\LaravelRegisters\Base;
+namespace Antriver\LaravelRegisters\Base;
 
 use Cache;
 use Countable;
@@ -8,9 +8,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use ReflectionClass;
-use Tmd\LaravelRegisters\Exceptions\AlreadyOnRegisterException;
-use Tmd\LaravelRegisters\Exceptions\NotOnRegisterException;
-use Tmd\LaravelRegisters\Interfaces\RegisterInterface;
+use Antriver\LaravelRegisters\Exceptions\AlreadyOnRegisterException;
+use Antriver\LaravelRegisters\Exceptions\NotOnRegisterException;
+use Antriver\LaravelRegisters\Interfaces\RegisterInterface;
 
 /**
  * A register is a simple list of models belonging to another model.
